@@ -42,7 +42,7 @@ beforeAll(async () => {
   await db.exec(
     `create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;grant usage on schema auth to authenticated;grant execute on function auth.uid() to authenticated;insert into auth.users values('${A}'),('${B}');`,
   );
-  await db.exec(readFileSync('supabase/migrations/20261027140000_tato_initial.sql', 'utf8'));
+  await db.exec(readFileSync('supabase/migrations/20261028130845_tato_initial.sql', 'utf8'));
   const r = await db.query<{ today: string; start: string }>(
     "select public.tato_today()::text as today,date_trunc('month',public.tato_today())::date::text as start",
   );

@@ -37,28 +37,25 @@ Para confirmação e recuperação por e-mail, permita estes redirects exatos no
 - `https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/auth/callback?next=/redefinir-senha`
 - `https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/auth/confirm`
 
-O Preview não aplica as migrações do Supabase. O fluxo financeiro completo e os e-mails continuam pendentes da configuração do banco descrita abaixo.
+A migração do Supabase já foi aplicada no projeto de desenvolvimento. Ainda faltam conferir os redirects no painel e testar com sessão real e e-mails; consulte o relatório abaixo.
 
-## Banco: aplicar a migração versionada
+## Banco de desenvolvimento: migração aplicada
 
-Arquivo: `supabase/migrations/20261027140000_tato_initial.sql`. Inclui perfis, contas, categorias, lançamentos, compromissos, índices, constraints, RLS, grants explícitos e funções de configuração/liquidação/estorno. Não cria projeto Supabase. A chave publicável **não** permite executar DDL.
+A migração foi aplicada pela integração Supabase em **28/10/2026** no projeto existente **tato-dev** (`mpwmwmbxawbhcngfysko`). A integração atribuiu a versão **20261028130845**, por isso o arquivo original `20261027140000_tato_initial.sql` foi renomeado para `supabase/migrations/20261028130845_tato_initial.sql`, sem alterar seu SQL. O SHA-256 do arquivo é idêntico ao conteúdo registrado no histórico remoto: `5f023a7063387dc286e2121d71bcae57769d90ad86f241521a1fe4fec0d997b0`.
 
-**Estado desta entrega:** a migração foi aplicada e testada apenas em PostgreSQL isolado via PGlite. **Não foi aplicada ao Supabase remoto**. Não havia Supabase CLI autenticada, `SUPABASE_ACCESS_TOKEN`, senha/conexão de banco ou MCP administrativo. As duas variáveis públicas estavam presentes; Auth respondeu e exigia confirmação de e-mail. As consultas sem linhas à Data API retornaram `PGRST205` para `public.profiles` e `public.accounts`, indicando tabelas ausentes do cache exposto. Isso não comprova a ausência de tabelas em schemas não expostos.
+As cinco tabelas, suas políticas RLS, grants, funções e vínculos foram criados e verificados. A Data API recusa acesso anônimo às tabelas e ao snapshot com HTTP 401. A leitura sob o papel SQL `authenticated` passou. **Ainda não foi validado HTTP com uma sessão Auth real**, pois não há token de usuário existente disponível no ambiente. Não foram criados usuários nem enviados e-mails. Não houve reset ou recriação do projeto.
 
-Um responsável com acesso administrativo ao **projeto de desenvolvimento existente** deve executar, a partir desta raiz:
+O histórico contém uma única migração `20261028130845 / tato_initial`. Não reaplique o SQL inicial, não mantenha uma cópia da versão antiga e não edite a migração já aplicada. Com CLI autenticada, a conferência reproduzível é:
 
 ```bash
-npx supabase login
-npx supabase link --project-ref SEU_PROJECT_REF_EXISTENTE
+npx supabase link --project-ref mpwmwmbxawbhcngfysko
 npx supabase migration list --linked
 npx supabase db push --linked --dry-run
-npx supabase db push --linked
-npx supabase migration list --linked
 ```
 
-Informe credenciais apenas pelo fluxo seguro da CLI; não as grave no código, argumentos compartilhados, logs ou Git. Confira o destino antes do push. Se houver histórico remoto prévio ou conflito de nomes, reconcilie o histórico **antes** de aplicar; não use `reset`, não recrie o projeto e não execute SQL manual sem registrar a migração. Para PostgreSQL local sem Supabase, use o teste PGlite abaixo; para a stack Supabase local, instale sua CLI e Docker, execute `npx supabase start` e `npx supabase migration up --local` em um ambiente exclusivo de testes.
+Os comandos acima são instruções de conferência; a aplicação desta entrega ocorreu via integração Supabase, com registro no histórico. Alterações futuras devem ser novas migrações versionadas. Não exponha todos os schemas, não conceda dados privados a `anon` e não desligue RLS para resolver erros de acesso.
 
-Na configuração da **Data API** do projeto, verifique que ela está habilitada e que `public` está entre os schemas expostos. A migração dá acesso `authenticated` explicitamente às cinco tabelas e às quatro RPCs necessárias; não depende da concessão automática a tabelas novas. Não exponha todos os schemas, não conceda dados privados a `anon` e não desligue RLS para resolver erros. Após aplicar, erros de schema/grants devem ser resolvidos como configuração, nunca como sucesso fictício.
+Relatório completo, resultado dos advisors e campos exatos para configurar Auth: [`docs/SUPABASE_DEV.md`](docs/SUPABASE_DEV.md).
 
 ## Autenticação e e-mails
 
@@ -85,7 +82,7 @@ Para confirmação em outro dispositivo, o app também oferece `/auth/confirm` c
 
 Não altere os templates para uma origem de produção inexistente. O callback só permite destinos internos predefinidos; `/auth/confirm` escolhe o destino pelo tipo verificado.
 
-**Limitação externa:** cadastro com confirmação, entrega de e-mail, recuperação completa e login válido não foram exercitados contra uma caixa de testes. É necessário um e-mail de teste permitido pelo serviço de envio/SMTP do projeto, Site URL e redirects corretos, migração aplicada e usuários de teste confirmados. Não foi desativada a confirmação e não foi alegada entrega de e-mail. Com a stack Supabase local, use a caixa Mailpit fornecida pela CLI para completar os fluxos sem e-mails reais.
+**Limitação externa:** a migração está aplicada, mas a integração não expõe a configuração de URL do Auth. Confira **Site URL** com a origem do Preview e acrescente os três callbacks exatos listados acima, mantendo todos os redirects existentes. Cadastro com confirmação, entrega de e-mail, recuperação completa e login válido não foram exercitados contra uma caixa de testes. É necessário um e-mail de teste permitido pelo serviço de envio/SMTP do projeto, Site URL e redirects corretos, usuários de teste confirmados e uma sessão disponível para a validação HTTP. Não foi desativada a confirmação e não foi alegada entrega de e-mail. Com a stack Supabase local, use a caixa Mailpit fornecida pela CLI para completar os fluxos sem e-mails reais.
 
 ## O que o aplicativo implementa
 
@@ -125,6 +122,14 @@ npm run build
 `npm test` executa testes financeiros, de validação e da **migração SQL real em PGlite**, um PostgreSQL isolado em memória. Não acessa o projeto remoto nem usuários reais. Os testes SQL criam um schema Auth mínimo e alternam papéis `authenticated`/`anon`, verificando RLS, grants, FKs compostas, triggers e RPCs. Isso não substitui testes contra o serviço Auth/PostgREST hospedado ou testes de concorrência entre conexões.
 
 O cenário obrigatório está nos testes de cálculo e de SQL: R$500 + R$2.000 − R$150 = R$2.350; pendência de R$300 e entrada de R$400 projetam R$2.450; quitada a saída, o saldo vira R$2.050 e a projeção continua R$2.450; repetir a RPC preserva tudo.
+
+### Conferência remota sem criar usuário ou enviar e-mail
+
+```bash
+npm run check:supabase
+```
+
+Esse comando verifica acesso anônimo negado e a configuração pública de Auth. Opcionalmente, com `TATO_TEST_ACCESS_TOKEN` configurado de forma segura para um usuário **já existente**, verifica o acesso HTTP autenticado e o isolamento do proprietário. Não cria sessão/usuário, não envia e-mails e não grava dados. Sem o token, informa que essa parte não foi executada. O script SQL de conferência de permissões é `scripts/verify-remote-permissions.sql` e usa transação read only com rollback; ele simula um papel de banco, sem equivaler a uma sessão Auth.
 
 ### Supabase direto: usuários A e B e concorrência
 

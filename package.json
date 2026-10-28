@@ -12,7 +12,8 @@
     "test:db": "node scripts/test-database.mjs",
     "test:e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:supabase": "node scripts/check-supabase-access.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
