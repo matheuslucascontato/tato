@@ -25,7 +25,7 @@ Cinco tabelas com RLS, 20 políticas, grants, FKs, funções e triggers foram ve
 
 ## Preview e evidências
 
-[Preview do Tato](https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/entrar), deployment `dpl_6yRvAw7mAvBww1xH5iQXsGQ3FfaF`, READY / staging (Preview), com proteção Vercel. Entrada e callbacks sem tokens foram conferidos; redefinição exige sessão. A origem dos callbacks retorna ao Preview. Não houve novo deploy nesta configuração do banco.
+[Preview do Tato](https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/entrar), deployment `dpl_EktewJJpmn4U3T2a8hDE8iWzVZsv`, READY / staging (Preview), com proteção Vercel. Entrada e callbacks sem tokens foram conferidos; redefinição exige sessão. A origem dos callbacks retorna ao Preview. Novo Preview da etapa de IA em READY/staging, fonte adc662f, com proteção Vercel preservada.
 
 Os testes locais cobrem finanças, validação, migração em PGlite, RLS A/B e liquidação idempotente. Isso não substitui sessão real, envio de e-mail nem concorrência por HTTP. A inspeção visual anterior cobriu login em celular e desktop; não se alega inspeção visual do painel autenticado remoto.
 
@@ -38,3 +38,7 @@ A integração não oferece Auth URL Configuration/templates: manter redirects e
 Migração adicional `20261028143816_tato_ai_preview.sql` aplicada em tato-dev, alinhada por hash ao histórico remoto. Migração inicial intacta. RLS em propostas e cotas; tabelas financeiras preservadas. Cotas atômicas com papel privado sem privilégios financeiros. Confirmação invoker atômica via mutateFinance com ID/versionamento, assinatura e recuperação após resposta perdida. SDK oficial/Responses API, gpt-5.4-mini, sem fallback, sem retries automáticos. O Secret Vercel de Preview foi conferido por metadados e preservado.
 
 OpenAI simulada nos testes; Chromium com UI/HTTP isolados em 390/1440px e capturas inspecionadas. RLS/grants remotos conferidos por catálogo/read only e HTTP anônimo negado. Falta sessão de testes para chamada paga no runtime e teste técnico HTTP A/B em banco isolado; scripts preparados, sem criar usuários/enviar e-mails. Relatos manuais do usuário não substituem esses testes. Consulte [IA.md](IA.md).
+
+## Validação final e implantação
+
+106 testes automáticos passaram; instalação, lint, tipos, formatação, diff check e build passaram. Quatro E2E públicos passaram, incluindo proteção de /conversar; financeiro skipped por falta de usuário de testes. UI isolada em 390/1440px passou; não equivale ao fluxo autenticado remoto. Preview dpl_EktewJJpmn4U3T2a8hDE8iWzVZsv READY/staging verificado via integração de acesso protegido da Vercel. Fonte adc662f; alterações seguintes apenas documentam o endereço. Secret OPENAI_API_KEY e variáveis Supabase continuam só em Preview, sem leitura de valores. Nenhuma chamada OpenAI real. Configuração de redirects para a nova origem está no README; a integração não pode inspecionar/alterar Auth URL Configuration.

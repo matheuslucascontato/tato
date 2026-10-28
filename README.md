@@ -27,17 +27,19 @@ A preparação para Vercel usa a stack Next.js existente, sem mudar a aplicaçã
 
 Sem `NEXT_PUBLIC_SITE_URL` explícita, o servidor usa a origem HTTPS de `VERCEL_URL` somente quando `VERCEL_ENV=preview`. Assim, links de confirmação/recuperação não apontam para localhost. A origem efetivamente retornada pelo provedor ainda deve ser permitida nos Redirect URLs do Supabase, com `/auth/callback`, `/auth/callback?next=/redefinir-senha` e `/auth/confirm`. Evite curingas amplos. Se preferir uma URL estável de teste, configure `NEXT_PUBLIC_SITE_URL` explicitamente com essa origem.
 
-**Preview pronto:** [https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/entrar](https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/entrar). Deployment `dpl_6yRvAw7mAvBww1xH5iQXsGQ3FfaF`, estado READY, destino de teste `staging` na API (Preview), com proteção de acesso da Vercel. Entre com a mesma conta Vercel conectada caso a plataforma solicite. A página `/entrar` foi verificada via acesso autenticado da plataforma: HTTP 200 e formulário de login presente. A implementação está versionada na branch [`codex/tato-v1-20261028`](https://github.com/matheuslucascontato/tato/tree/codex/tato-v1-20261028), separada da `main`; o envio ao GitHub foi autorizado explicitamente em 28/10/2026.
+**Preview pronto:** [https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/entrar](https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/entrar). Deployment `dpl_EktewJJpmn4U3T2a8hDE8iWzVZsv`, estado READY, destino de teste `staging` na API (Preview), com proteção de acesso da Vercel. Entre com a mesma conta Vercel conectada caso a plataforma solicite. A página `/entrar` foi verificada via acesso autenticado da plataforma: HTTP 200 e formulário de login presente. A implementação está versionada na branch [`codex/tato-v1-20261028`](https://github.com/matheuslucascontato/tato/tree/codex/tato-v1-20261028), separada da `main`; o envio ao GitHub foi autorizado explicitamente em 28/10/2026.
 
-As duas variáveis públicas do Supabase estão configuradas apenas para Preview. O primeiro pedido sem destino explícito foi classificado como produção pela Vercel e cancelado antes de concluir; a implantação ativa foi criada com `target=staging`, conforme o contrato da API. Não usar `target=preview` na API REST, pois ela rejeita essa string. A autorização explícita do usuário para enviar o código à Vercel foi recebida antes da implantação de teste concluída.
+As duas variáveis públicas do Supabase e `OPENAI_API_KEY` (Secret) estão configuradas apenas para Preview. Foram preservadas, conferindo somente metadados com `decrypt=false`; nenhum valor do Secret foi recuperado. A nova implantação usa o código do commit `adc662f`, com `target=staging` explícito conforme o contrato atual da API. Não houve promoção para produção, mudança de proteção nem alteração de faturamento. Atualizações posteriores a esse commit registram apenas a URL e as evidências nesta documentação.
+
+Abra **[Conversar com o Tato](https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/conversar)** e entre na proteção Vercel e no Tato. `/entrar`, `/conversar` e callbacks sem tokens foram conferidos via acesso autorizado da Vercel; conversar/redefinir senha exigem sessão Tato. Isso não valida uma chamada OpenAI nem uma sessão financeira real. Foram executados **106 testes**, lint, tipos, formatação e build; Chromium isolado em celular/desktop e quatro E2E públicos passaram. E2E financeiro, HTTP A/B e teste pago real continuam pendentes de sessões de teste.
 
 Para confirmação e recuperação por e-mail, permita estes redirects exatos no Supabase:
 
-- `https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/auth/callback`
-- `https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/auth/callback?next=/redefinir-senha`
-- `https://tato-preview-3x9t8duec-matheuscamilocontato-2621s-projects.vercel.app/auth/confirm`
+- `https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/auth/callback`
+- `https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/auth/callback?next=/redefinir-senha`
+- `https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/auth/confirm`
 
-A migração do Supabase já foi aplicada no projeto de desenvolvimento. Ainda faltam conferir os redirects no painel e testar com sessão real e e-mails; consulte o relatório abaixo.
+As duas migrações estão aplicadas no projeto de desenvolvimento. Para esta nova origem, confira Site URL e acrescente os redirects exatos acima no painel, preservando os antigos. `NEXT_PUBLIC_SITE_URL` não está definida na Vercel; o app usa o fallback HTTPS de `VERCEL_URL` no ambiente Preview. O login por senha e os registros existentes foram relatados como testados pelo usuário; ainda faltam testes técnicos HTTP A/B e o fluxo da IA com sessão real.
 
 ## Banco de desenvolvimento: migração aplicada
 

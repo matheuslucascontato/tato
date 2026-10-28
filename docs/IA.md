@@ -79,6 +79,25 @@ Os testes automáticos usam OpenAI simulada, incluindo fetch do SDK oficial, sem
 
 `scripts/verify-ai-permissions.sql` passou remotamente em transação read only: tabelas/RLS, políticas, grants, assinaturas invoker/definer, search_path e papel sem poder financeiro. `check:supabase` confirmou HTTP 401 anônimo para as seis tabelas; confirmação de e-mail segue obrigatória. Isso não comprova HTTP A/B autenticado. Advisors: sem novos alertas de segurança; continuam os avisos preexistentes sobre `rls_auto_enable` e senhas vazadas, descritos em SUPABASE_DEV.md. Índices novos ainda sem uso são esperados antes de tráfego; não foram removidos.
 
+## Preview publicado para testes
+
+- Projeto existente `tato-preview` / `prj_8aFMUCjXY0X7Q40lDLCYrzFSn2Rc`.
+- Deployment `dpl_EktewJJpmn4U3T2a8hDE8iWzVZsv`, **READY**, `target=staging` (Preview), fonte `adc662f` na mesma branch.
+- [Abrir conversa](https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/conversar).
+- Proteção Vercel SSO continua habilitada para previews. `/entrar`, `/conversar`, callbacks sem token e redefinição foram consultados pelo acesso autorizado da Vercel. Página de entrada respondeu 200; conversa/redefinição exigiram sessão Tato. Nenhuma sessão financeira foi extraída ou criada. O Secret foi preservado e não foi lido.
+- Depois da implantação, alterações de documentação registram a nova URL; o código executável continua o do commit acima. `main` sem merge/promoção.
+- Quatro E2E públicos passaram; um E2E financeiro skipped. `test:ai-http` e `test:db`: NÃO EXECUTADO por falta de credenciais isoladas. Nenhuma chamada paga OpenAI; não foi validado crédito/acesso ao modelo. Há dados existentes no desenvolvimento; não inserimos fixtures lá.
+
+Em [Auth → URL Configuration](https://supabase.com/dashboard/project/mpwmwmbxawbhcngfysko/auth/url-configuration), confira **Site URL** com `https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app`. Mantenha os Redirect URLs existentes e acrescente somente os ausentes:
+
+```text
+https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/auth/callback
+https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/auth/callback?next=/redefinir-senha
+https://tato-preview-886bz969w-matheuscamilocontato-2621s-projects.vercel.app/auth/confirm
+```
+
+A integração não dispõe de leitura/edição dessa configuração; nenhuma entrada foi removida ou alterada. Não foi possível confirmar a allowlist atual. `NEXT_PUBLIC_SITE_URL` não aparece nos metadados Vercel: o código usa o fallback de `VERCEL_URL` em Preview, portanto a origem enviada pelo app deve ser a nova acima. Não há domínio de produção inventado. Mantenha confirmação de e-mail habilitada.
+
 ## Aceite manual ainda necessário no Preview
 
 Consulte o endereço **atual** e os callbacks exatos no README. Entre na proteção Vercel com sua conta e depois no Tato. Sem usuários novos/e-mails automáticos nesta tarefa. Com uma sessão de teste autorizada, faça **no máximo cinco mensagens pagas**:
