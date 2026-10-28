@@ -90,6 +90,7 @@ export async function financeAction(
   form: FormData,
 ): Promise<ActionState> {
   const { db, user } = await requireUser();
+  if (!(operation in destinations)) return { error: 'Operação indisponível neste formulário.' };
   try {
     await mutateFinance(db, user.id, operation, form);
   } catch (error) {

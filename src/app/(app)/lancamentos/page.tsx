@@ -86,7 +86,11 @@ export default async function Transactions({
       <section className="panel transaction-list">
         {rows.length ? (
           rows.map((t) => (
-            <article key={t.id} className="list-item">
+            <article
+              key={t.id}
+              id={`lancamento-${t.id}`}
+              className={`list-item ${q.destaque === t.id ? 'transaction-highlight' : ''}`}
+            >
               <div>
                 <h3>{t.description}</h3>
                 <p>

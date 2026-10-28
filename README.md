@@ -1,6 +1,6 @@
 # Tato
 
-Mais clareza para cuidar do seu dinheiro. Primeira versão de um organizador financeiro pessoal em português do Brasil, com contas **manuais**, lançamentos realizados e compromissos futuros. Não há sincronização bancária, transferências, cartões, empréstimos detalhados, parcelamentos, recorrências, IA, WhatsApp, pagamentos ou assinaturas nesta entrega.
+Mais clareza para cuidar do seu dinheiro. Primeira versão de um organizador financeiro pessoal em português do Brasil, com contas **manuais**, lançamentos realizados e compromissos futuros. Inclui conversa com IA no servidor para consultar totais e preparar receitas/despesas com revisão e confirmação. Não há sincronização bancária, transferências, cartões, empréstimos detalhados, parcelamentos, recorrências, WhatsApp, pagamentos ou assinaturas.
 
 ## Executar localmente
 
@@ -45,7 +45,7 @@ A migração foi aplicada pela integração Supabase em **28/10/2026** no projet
 
 As cinco tabelas, suas políticas RLS, grants, funções e vínculos foram criados e verificados. A Data API recusa acesso anônimo às tabelas e ao snapshot com HTTP 401. A leitura sob o papel SQL `authenticated` passou. **Ainda não foi validado HTTP com uma sessão Auth real**, pois não há token de usuário existente disponível no ambiente. Não foram criados usuários nem enviados e-mails. Não houve reset ou recriação do projeto.
 
-O histórico contém uma única migração `20261028130845 / tato_initial`. Não reaplique o SQL inicial, não mantenha uma cópia da versão antiga e não edite a migração já aplicada. Com CLI autenticada, a conferência reproduzível é:
+O histórico contém `20261028130845 / tato_initial` e `20261028143816 / tato_ai_preview` (IA, propostas e cotas; detalhes em [docs/IA.md](docs/IA.md)). Não reaplique o SQL inicial, não mantenha uma cópia da versão antiga e não edite a migração já aplicada. Com CLI autenticada, a conferência reproduzível é:
 
 ```bash
 npx supabase link --project-ref mpwmwmbxawbhcngfysko
@@ -94,9 +94,19 @@ Não altere os templates para uma origem de produção inexistente. O callback s
 - Painel: saldo por conta e consolidado, receitas/despesas do mês selecionado, próximos compromissos e previsão até o fim do mês **atual**, com explicação. Contas arquivadas continuam nos totais; há aviso se têm saldo.
 - Interface responsiva, navegação inferior no celular/lateral no desktop, rótulos, foco visível, BRL, datas brasileiras, estados vazios/erro/sucesso/carregamento e prevenção de reenvio.
 
+## Conversar com o Tato
+
+Abra `/conversar` depois do login. A IA consulta saldo, receitas/despesas por período/categoria e folga estimada; prepara uma receita/despesa realizada e pede esclarecimento. O card mostra tipo, valor, descrição, data, conta e categoria. Correções geram nova versão; somente o botão **Confirmar lançamento** grava. Futuro, quitação e outras alterações seguem nas telas manuais. Um “sim” na conversa não grava.
+
+Configure `OPENAI_API_KEY` como Secret de **Preview** no servidor. `OPENAI_MODEL` é opcional, padrão `gpt-5.4-mini`; `TATO_AI_ENABLED=false` pausa novas chamadas. Não use `NEXT_PUBLIC_` para a chave, nem copie o Secret para o Codex. A configuração ausente gera aviso na conversa sem interromper o app manual. O Secret existente foi preservado e sua presença conferida apenas por metadados.
+
+Há cotas persistentes de 5 mensagens/minuto e 20/dia por pessoa, com 100/dia para toda a prévia; uma chamada e uma ferramenta por mensagem nesta versão, até 1.200 tokens de saída e aproximadamente 40 s. Reservas não são repetidas automaticamente. Propostas valem 15 minutos e usam UUID estável/estado no banco para impedir duplicação. Mensagens e conteúdo das propostas não são persistidos no servidor. Detalhes de autorização, dados enviados, retenção, variáveis e aceite manual: **[docs/IA.md](docs/IA.md)**.
+
+Os testes locais usam OpenAI simulada. Sem sessão de testes disponível, **não houve chamada paga real nem validação HTTP A/B autenticada nesta etapa**. Os relatos do usuário de cadastro/login e operações manuais foram considerados, sem tratá-los como teste técnico de autorização. A integração da IA ainda exige o aceite com sessão de testes no runtime de Preview, conforme o roteiro de no máximo cinco mensagens.
+
 ## Regras e arquitetura
 
-`src/components` e `src/app` contêm a interface e adaptadores HTTP/Server Actions; `src/lib/validation.ts` valida entradas; `src/lib/services` concentra operações e acesso ao banco; `src/lib/finance` contém funções puras. Um futuro adaptador de IA/WhatsApp deve autenticar o usuário, reutilizar os serviços e usar o mesmo contexto RLS. Nenhuma integração futura é chamada nesta versão.
+`src/components` e `src/app` contêm a interface e adaptadores HTTP/Server Actions; `src/lib/validation.ts` valida entradas; `src/lib/services` concentra operações e acesso ao banco; `src/lib/finance` contém funções puras. Um futuro adaptador de WhatsApp deve autenticar o usuário, reutilizar os serviços e usar o mesmo contexto RLS. O adaptador de IA usa esses mesmos serviços no servidor. WhatsApp e integrações bancárias não são chamados.
 
 - Dinheiro em `bigint` PostgreSQL, em centavos inteiros, até **99.999.999.999 centavos** por valor. Conversão e somas usam `BigInt`; o valor individual volta a `number` apenas dentro do limite seguro para JSON. Não há aritmética monetária com floats.
 - Datas financeiras são `date`/strings `AAAA-MM-DD`, sem converter para o fuso do navegador. “Hoje” vem de `America/Sao_Paulo`. Auditoria usa `timestamptz`.
@@ -105,7 +115,7 @@ Não altere os templates para uma origem de produção inexistente. O callback s
 - Previsão = saldo atual + entradas pendentes até o fim do mês atual − saídas pendentes até essa data, incluindo atrasos de meses anteriores. Cancelados/liquidados são excluídos. É estimativa cadastrada, sem garantia de saldo bancário.
 - `settle_commitment` bloqueia o compromisso, cria um único lançamento e atualiza o estado na mesma transação. Repetições retornam o mesmo lançamento. Um índice único e triggers de integridade diferidos impedem estado quitado sem lançamento ou vínculo com pendência/cancelamento, inclusive em REST direto.
 - Lançamentos vinculados não podem ser editados diretamente. Exclusão direta falha por integridade; use `reverse_settlement`, que remove a movimentação e reabre a pendência atomicamente e de forma idempotente.
-- Todas as funções são `security invoker`, com `search_path` fixo e execução restrita. FKs compostas por proprietário e tipo impedem relações com conta/categoria de outro usuário ou categoria incompatível. RLS protege cada linha. Contas/categorias/compromissos não têm grant de DELETE.
+- As funções financeiras são `security invoker`, com `search_path` fixo e execução restrita. As duas funções privadas de cotas da IA são a exceção mínima, com papel dedicado sem grants financeiros, descrita em docs/IA.md. FKs compostas por proprietário e tipo impedem relações com conta/categoria de outro usuário ou categoria incompatível. RLS protege cada linha. Contas/categorias/compromissos não têm grant de DELETE.
 - Formulários novos de conta/lançamento/compromisso reutilizam um UUID de requisição: a repetição idêntica não duplica registros. Onboarding e categorias têm suas próprias garantias idempotentes/únicas.
 - A RPC `get_tato_snapshot` lê todas as tabelas em um único snapshot MVCC, com RLS e sem parâmetro de proprietário. Uma quitação concorrente não mistura estados de saldo e previsão; a agregação JSON evita truncamento pelo limite de linhas da Data API. Para volumes altos, uma próxima etapa pode substituir o snapshot completo por totais SQL e relatórios paginados.
 

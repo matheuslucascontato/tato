@@ -12,7 +12,14 @@ assert.equal(
   'Este check deve apontar para tato-dev.',
 );
 assert.ok(key.startsWith('sb_publishable_'), 'Use somente a chave publicável.');
-const tables = ['profiles', 'accounts', 'categories', 'transactions', 'commitments'];
+const tables = [
+  'profiles',
+  'accounts',
+  'categories',
+  'transactions',
+  'commitments',
+  'ai_proposals',
+];
 const report = {
   project: 'tato-dev',
   anonymous: [],
@@ -85,7 +92,7 @@ if (token) {
     snapshot.data.profile === null || snapshot.data.profile.user_id === uid,
     'Snapshot retornou perfil de outro proprietário.',
   );
-  for (const table of tables.filter((t) => t !== 'profiles')) {
+  for (const table of tables.filter((t) => !['profiles', 'ai_proposals'].includes(t))) {
     assert.ok(
       Array.isArray(snapshot.data[table]) &&
         snapshot.data[table].every((row) => row.user_id === uid),
@@ -94,7 +101,7 @@ if (token) {
   }
   report.authenticatedSession = {
     status: 'passed',
-    scope: 'getUser, SELECT das cinco tabelas e get_tato_snapshot; sem gravações',
+    scope: 'getUser, SELECT das seis tabelas e get_tato_snapshot; sem gravações',
   };
 }
 if (process.env.TATO_ACCESS_REPORT_PATH)

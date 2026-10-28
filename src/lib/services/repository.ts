@@ -7,7 +7,13 @@ export async function snapshot(db: DB, userId: string): Promise<Snapshot> {
   // The RPC runs with the authenticated context and RLS; it accepts no owner parameter.
   const { data, error } = await db.rpc('get_tato_snapshot', {});
   if (error) throw error;
-  if (!data || data.accounts.some((a) => a.user_id !== userId))
+  if (
+    !data ||
+    (data.profile && data.profile.user_id !== userId) ||
+    [data.accounts, data.categories, data.transactions, data.commitments].some((rows) =>
+      rows.some((row) => row.user_id !== userId),
+    )
+  )
     throw new Error('Não foi possível conferir os registros da sua conta.');
   return data;
 }

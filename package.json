@@ -13,13 +13,16 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:supabase": "node scripts/check-supabase-access.mjs"
+    "check:supabase": "node scripts/check-supabase-access.mjs",
+    "test:ai-http": "node scripts/test-ai-http.mjs",
+    "test:ai-ui": "node scripts/test-ai-ui.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.80.0",
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
+    "openai": "7.45.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "server-only": "^0.0.1",
@@ -37,6 +40,7 @@
     "prettier": "^3.9.10",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
+    "vite": "7.3.7",
     "vitest": "^3.2.0"
   },
   "engines": {

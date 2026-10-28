@@ -854,7 +854,7 @@ input[readonly] {
   .bottom-nav {
     position: fixed;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     bottom: 0;
     left: 0;
     right: 0;
@@ -960,4 +960,128 @@ h3 {
 }
 .list-item > div:first-child {
   min-width: 0;
+}
+
+.chat-layout {
+  max-width: 850px;
+  margin: 0 auto;
+}
+.chat-thread {
+  min-width: 0;
+}
+.chat-welcome {
+  padding: 15px 0;
+}
+.chat-welcome ul {
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 2;
+}
+.chat-messages {
+  display: grid;
+  gap: 16px;
+}
+.chat-message {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.chat-message p {
+  margin: 8px 0;
+}
+.chat-message.user {
+  background: var(--cream);
+  margin-left: 24px;
+}
+.chat-message.tato {
+  background: #f2f6f0;
+  margin-right: 10px;
+}
+.chat-message > strong {
+  font-size: 12px;
+}
+.chat-summary dl,
+.proposal-details {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+.chat-summary dl > div,
+.proposal-details > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 18px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+.chat-summary dt,
+.proposal-details dt {
+  font-size: 13px;
+}
+.chat-summary dd,
+.proposal-details dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.chat-proposal {
+  border: 2px solid var(--petrol);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  background: #fffefa;
+}
+.chat-composer {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 24px;
+}
+.chat-composer textarea {
+  min-height: 100px;
+  resize: vertical;
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #a5b1b0;
+  border-radius: 8px;
+  margin-top: 8px;
+  color: var(--petrol);
+  background: #fffefa;
+  font: inherit;
+}
+.chat-edit {
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: 15px;
+  min-width: 0;
+}
+.chat-edit legend {
+  font-weight: 600;
+  padding-bottom: 16px;
+}
+.transaction-highlight {
+  outline: 2px solid var(--petrol);
+  outline-offset: 6px;
+}
+@media (max-width: 600px) {
+  .chat-thread {
+    padding: 16px;
+  }
+  .chat-proposal {
+    padding: 14px;
+  }
+  .chat-message {
+    padding: 14px;
+  }
+  .chat-message.user {
+    margin-left: 12px;
+  }
+  .chat-message.tato {
+    margin-right: 0;
+  }
 }

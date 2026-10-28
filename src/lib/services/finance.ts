@@ -82,6 +82,21 @@ export async function mutateFinance(db: DB, userId: string, operation: string, f
     if (error) throw error;
     return;
   }
+  if (operation === 'ai-confirm') {
+    // The authenticated adapter supplies a signed, reviewed proposal. SQL locks
+    // its version and commits the movement + confirmation atomically. Same ID on retries.
+    const { contentSchema } = await import('@/lib/ai/types');
+    const content = contentSchema.parse(JSON.parse(String(values.content)));
+    const version = Number(values.version);
+    if (!Number.isSafeInteger(version) || version < 1) throw new Error('Versão inválida.');
+    const { data, error } = await db.rpc('confirm_tato_ai_proposal', {
+      p_id: id(),
+      p_version: version,
+      p_content: content,
+    });
+    if (error) throw error;
+    return data;
+  }
   if (operation === 'transaction-create' || operation === 'transaction-edit') {
     const input = entrySchema.parse(values);
     const { data: account, error: accountError } = await db

@@ -1,3 +1,13 @@
+# Atualização: conversa com IA — 28/10/2026
+
+A etapa seguinte acrescentou **20261028143816 / tato_ai_preview** em tato-dev, sem alterar/reaplicar a inicial. Hash local/remoto `c33bb5835ccf3339270e1ca457e5a8c32244653f9918e2d5ae302ca7cdac8796`. Acrescenta public.ai_proposals (metadados assinados/versionados) e tato_private.ai_usage (cotas), ambas com RLS. Não armazenamos prompts ou conteúdo de proposta. As funções financeiras/públicas são invoker; somente duas funções privadas de cota usam definer com papel dedicado sem grants financeiros. Checks de catálogo e HTTP anônimo passaram; não há novos avisos de segurança. Script: `scripts/verify-ai-permissions.sql`.
+
+Não foram criados usuários, enviados e-mails ou inseridas fixtures no remoto. As tabelas financeiras e dados existentes foram preservados. Sessões de testes não estão disponíveis: HTTP A/B e fluxo OpenAI real permanecem pendentes. O usuário relatou validação manual do app financeiro; isso não substitui essas verificações. [Relatório da IA](IA.md), [Preview e redirects atuais](../README.md).
+
+**O relatório abaixo é histórico da aplicação inicial; URLs antigas e contagens de registros refletem aquele momento.** Não reaplique nenhuma migração já registrada.
+
+---
+
 # Supabase de desenvolvimento — verificação em 28/10/2026
 
 Projeto **tato-dev**, referência `mpwmwmbxawbhcngfysko`, região `sa-east-1`, PostgreSQL 17.11. A aplicação permanece no Preview protegido da Vercel. Não foram criados usuários, enviadas mensagens de e-mail, gravados dados financeiros de teste no remoto, executados resets ou recriados projetos.

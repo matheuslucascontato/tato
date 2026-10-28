@@ -4,7 +4,7 @@ A implementação está na branch `codex/tato-v1-20261028`. O repositório come�
 
 ## Implementação
 
-Next.js 16/App Router, React 19, TypeScript estrito, Tailwind 4, Supabase JS 2/SSR 0.12, com lockfile. Auth, onboarding retomável, contas manuais, categorias próprias, lançamentos realizados, compromissos e painel estão implementados. Interface em pt-BR, identidade provisória em texto, sem mascote definitivo. Sem IA, WhatsApp, integração bancária, transferências, cartões, parcelamentos, empréstimos detalhados ou recorrências.
+Next.js 16/App Router, React 19, TypeScript estrito, Tailwind 4, Supabase JS 2/SSR 0.12, com lockfile. Auth, onboarding retomável, contas manuais, categorias próprias, lançamentos realizados, compromissos e painel estão implementados. Interface em pt-BR, identidade provisória em texto, sem mascote definitivo. Conversa com IA implementada: ver [IA.md](IA.md) para limites, segurança, migração e testes. Sem WhatsApp, integração bancária, transferências, cartões, parcelamentos, empréstimos detalhados ou recorrências.
 
 ## Decisões financeiras e de autorização
 
@@ -32,3 +32,9 @@ Os testes locais cobrem finanças, validação, migração em PGlite, RLS A/B e 
 ## Pendências externas
 
 A integração não oferece Auth URL Configuration/templates: manter redirects existentes e acrescentar os três callbacks exatos do Preview, conferindo Site URL e confirmação de e-mail. Falta uma sessão existente autorizada para testar HTTP autenticado e o fluxo financeiro no navegador. Confirmação e recuperação por e-mail exigem tarefa com envio autorizado. Os advisors preexistentes e os detalhes de verificação estão em [SUPABASE_DEV.md](SUPABASE_DEV.md).
+
+## Etapa da conversa com IA
+
+Migração adicional `20261028143816_tato_ai_preview.sql` aplicada em tato-dev, alinhada por hash ao histórico remoto. Migração inicial intacta. RLS em propostas e cotas; tabelas financeiras preservadas. Cotas atômicas com papel privado sem privilégios financeiros. Confirmação invoker atômica via mutateFinance com ID/versionamento, assinatura e recuperação após resposta perdida. SDK oficial/Responses API, gpt-5.4-mini, sem fallback, sem retries automáticos. O Secret Vercel de Preview foi conferido por metadados e preservado.
+
+OpenAI simulada nos testes; Chromium com UI/HTTP isolados em 390/1440px e capturas inspecionadas. RLS/grants remotos conferidos por catálogo/read only e HTTP anônimo negado. Falta sessão de testes para chamada paga no runtime e teste técnico HTTP A/B em banco isolado; scripts preparados, sem criar usuários/enviar e-mails. Relatos manuais do usuário não substituem esses testes. Consulte [IA.md](IA.md).

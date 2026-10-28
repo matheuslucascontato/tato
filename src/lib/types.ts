@@ -1,3 +1,4 @@
+import type { ProposalState, ProposalContent } from './ai/types';
 export type Kind = 'income' | 'expense';
 export type Account = {
   id: string;
@@ -65,6 +66,7 @@ type Table<Row, Required extends keyof Row> = {
 export type Database = {
   public: {
     Tables: {
+      ai_proposals: Table<ProposalState, 'id' | 'user_id' | 'fingerprint'>;
       profiles: Table<Profile, 'user_id' | 'display_name'>;
       accounts: Table<Account, 'user_id' | 'name' | 'initial_balance_cents' | 'reference_date'>;
       categories: Table<Category, 'user_id' | 'name' | 'kind'>;
@@ -85,6 +87,25 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      prepare_tato_ai_proposal: {
+        Args: { p_id: string; p_version: number; p_content: ProposalContent };
+        Returns: ProposalState;
+      };
+      cancel_tato_ai_proposal: { Args: { p_id: string; p_version: number }; Returns: undefined };
+      confirm_tato_ai_proposal: {
+        Args: { p_id: string; p_version: number; p_content: ProposalContent };
+        Returns: string;
+      };
+      reserve_tato_ai_usage: { Args: { p_request: string; p_model: string }; Returns: boolean };
+      finish_tato_ai_usage: {
+        Args: {
+          p_request: string;
+          p_status: string;
+          p_input: number | null;
+          p_output: number | null;
+        };
+        Returns: undefined;
+      };
       get_tato_snapshot: { Args: Record<string, never>; Returns: Snapshot };
       initialize_tato: {
         Args: { p_name: string; p_account_name: string; p_balance: number; p_reference: string };

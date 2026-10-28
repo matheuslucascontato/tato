@@ -20,6 +20,7 @@ for (const size of [
     await expect(page.getByRole('button', { name: 'Solicitar link' })).toBeVisible();
     for (const route of [
       '/painel',
+      '/conversar',
       '/contas',
       '/lancamentos',
       '/compromissos',
