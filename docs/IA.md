@@ -49,7 +49,7 @@ A RPC `confirm_tato_ai_proposal` bloqueia a linha, revalida conta ativa/categori
 
 `tato_private.ai_usage` contém apenas usuário, dia/timestamp, modelo, status, request ID e tokens quando disponíveis. Não é exposta na Data API, não tem grants de tabela para anon/authenticated e usa RLS. Retém metadados mínimos de idempotência sem prompts, descrições ou segredos; não existe limpeza/reset por usuários comuns. As cotas são de mensagens e **não garantem um teto financeiro exato**; acompanhe consumo/crédito no projeto OpenAI, sem alteração automática de faturamento.
 
-Somente `tato_private.reserve_ai`/`finish_ai` são SECURITY DEFINER. Seu proprietário é um papel dedicado NOLOGIN, sem superuser, bypassrls, criação de roles/banco nem grants financeiros. `auth.uid()` é obrigatório, `search_path` é vazio, statements são fixos e só acessam uso/cotas. Funções públicas são wrappers invoker. Membership/CREATE temporários usados para atribuição de ownership durante a migração foram revogados. Não há chave administrativa no app. A exceção foi testada em PGlite e nos catálogos remotos. Usuários podem consumir a própria cota via reserva direta, mas não consultar/resetar a cota global ou liberar reservas; abuso autenticado ainda pode esgotar a capacidade pequena desta prévia.
+Somente `tato_private.reserve_ai`/`finish_ai` são SECURITY DEFINER. Seu proprietário é um papel dedicado NOLOGIN, sem superuser, bypassrls, criação de roles/banco nem grants financeiros. O identificador da sessão validada pelo gateway é obrigatório (mesma leitura de claims de `auth.uid()`, sem depender de acesso ao schema `auth`), `search_path` é vazio, statements são fixos e só acessam uso/cotas. Funções públicas são wrappers invoker. Membership/CREATE temporários usados para atribuição de ownership durante a migração foram revogados. Não há chave administrativa no app. A exceção foi testada em PGlite e nos catálogos remotos. Usuários podem consumir a própria cota via reserva direta, mas não consultar/resetar a cota global ou liberar reservas; abuso autenticado ainda pode esgotar a capacidade pequena desta prévia.
 
 ## Migração e verificações
 
@@ -119,3 +119,11 @@ Use somente dados fictícios em conta de testes, sem movimentações bancárias 
 - https://supabase.com/docs/guides/api/securing-your-api
 - https://vercel.com/docs/environment-variables
 - https://vercel.com/docs/rest-api/deployments/create-a-new-deployment
+
+## Correção da leitura de sessão nas cotas — 28/10/2026
+
+O teste manual encontrou `42501: permission denied for schema auth` em `reserve_ai`, antes da chamada OpenAI. O papel NOLOGIN tinha EXECUTE em `auth.uid()`, mas não USAGE no schema gerenciado `auth`; o papel de migração não tem grant option nesse schema. Uma declaração GRANT anterior não garantiu o acesso efetivo.
+
+A migração aditiva `20261028152627_tato_ai_quota_session_fix.sql`, aplicada em tato-dev, atualiza somente as duas funções privadas de cotas. Elas passam a ler o subject definido pelo gateway nos mesmos dois settings e com a mesma precedência da definição instalada de `auth.uid()`: `request.jwt.claim.sub` e fallback `request.jwt.claims ->> 'sub'`. Não recebem user_id do cliente. Ownership, assinaturas, ACLs, RLS, cotas e ausência de privilégios financeiros foram preservados. Membership SET/INHERIT foi concedido temporariamente ao papel de migração e revogado; a entrada ADMIN preexistente do Supabase permanece sem SET/INHERIT.
+
+Verificação remota via SQL com papel authenticated e contexto de sessão simulado em transação revertida: primeira reserva true, repetição false, finalização succeeded. Asserções passaram e a consulta posterior confirmou zero linhas diagnósticas restantes. Sessão ausente passou a retornar a rejeição prevista, sem o erro 42501. Nenhum lançamento financeiro nem chamada OpenAI foi feito. Isso não substitui o teste autenticado completo pelo navegador, que permanece pendente. A correção do banco funciona no Preview existente e dispensa novo deploy do aplicativo.
