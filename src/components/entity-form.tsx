@@ -122,6 +122,7 @@ export async function EntityForm({ section, id }: { section: string; id?: string
                 accounts={data.accounts}
                 categories={data.categories}
                 today={today}
+                featured={section === 'lancamentos'}
                 future={section === 'compromissos'}
                 entry={section === 'compromissos' ? commitment : transaction}
               />

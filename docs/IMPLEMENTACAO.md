@@ -42,3 +42,7 @@ OpenAI simulada nos testes; Chromium com UI/HTTP isolados em 390/1440px e captur
 ## Validação final e implantação
 
 106 testes automáticos passaram; instalação, lint, tipos, formatação, diff check e build passaram. Quatro E2E públicos passaram, incluindo proteção de /conversar; financeiro skipped por falta de usuário de testes. UI isolada em 390/1440px passou; não equivale ao fluxo autenticado remoto. Preview dpl_EktewJJpmn4U3T2a8hDE8iWzVZsv READY/staging verificado via integração de acesso protegido da Vercel. Fonte adc662f; alterações seguintes apenas documentam o endereço. Secret OPENAI_API_KEY e variáveis Supabase continuam só em Preview, sem leitura de valores. Nenhuma chamada OpenAI real. Configuração de redirects para a nova origem está no README; a integração não pode inspecionar/alterar Auth URL Configuration.
+
+## Redesign — 30/10/2026
+
+Reformulação integrada a partir de abb615c, preservando a correção de cotas 20261028152627. Painel, navegação, registro rápido, onboarding, Auth e componentes comuns na nova identidade. Novo adaptador saveFinanceAction reutiliza serviço autenticado existente; confirmação/sucesso só após retorno do serviço. Sem alterações nas regras/migrações/dados remotos ou chamadas OpenAI reais. Assets raster derivados das referências, oito poses e origem documentada. [REDESIGN_TATO.md](REDESIGN_TATO.md) reúne decisões, contraste, capturas com fixtures, testes e limites de evidência.

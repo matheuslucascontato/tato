@@ -1,6 +1,9 @@
 'use client';
 import { useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { Mascot } from '@/components/brand/tato';
+import { useAppUI } from '@/components/ui/app-ui';
+import { QuickEntryButton } from '@/components/quick-entry';
 import { useRouter } from 'next/navigation';
 import { money, moneyInput, parseMoney } from '@/lib/finance/money';
 import { dateBR, todaySP } from '@/lib/finance/dates';
@@ -18,6 +21,7 @@ export function Chat({
   unavailable?: string;
 }) {
   const router = useRouter();
+  const { notify } = useAppUI();
   const [rows, setRows] = useState<Row[]>([]);
   const [message, setMessage] = useState('');
   const [context, setContext] = useState<string>();
@@ -44,7 +48,10 @@ export function Chat({
       const result = (await response.json()) as ChatResult & { error?: string; code?: string };
       if (!response.ok) {
         if (response.status === 401) setExpired(true);
-        if (['timeout', 'already_consumed'].includes(result.code || '') || response.status >= 500)
+        if (
+          ['timeout', 'already_consumed'].includes(result.code || '') ||
+          (response.status >= 500 && (!result.code || result.code === 'validation'))
+        )
           setUncertain(
             command.action === 'message'
               ? command.request_id
@@ -68,7 +75,13 @@ export function Chat({
         setEditing(false);
         setContext(undefined);
       }
-      if (result.transaction_id) router.refresh();
+      if (result.transaction_id) {
+        router.refresh();
+        notify({
+          message: 'Lançamento conferido no banco. Seus totais estão atualizados.',
+          expression: 'feliz',
+        });
+      }
       setUncertain(undefined);
       return result;
     } catch (e) {
@@ -110,19 +123,29 @@ export function Chat({
   }
   return (
     <div className="chat-layout">
-      <div className="notice">
-        A IA recebe sua mensagem, até três mensagens curtas desta conversa e nomes de
-        contas/categorias. Não recebe e-mail, senha nem seu histórico financeiro completo. Resumos
-        são calculados pelo Tato. Nada é lançado sem revisar e confirmar.
-      </div>
+      <details className="chat-privacy">
+        <summary>Como a conversa usa seus dados</summary>
+        <p>
+          A IA recebe sua mensagem, até três mensagens curtas desta conversa e nomes de
+          contas/categorias. Não recebe e-mail, senha nem seu histórico financeiro completo. Resumos
+          são calculados pelo Tato. Nada é lançado sem revisar e confirmar.
+        </p>
+      </details>
       {unavailable && (
         <p role="status" className="notice warning">
           {unavailable}
         </p>
       )}
+      <div className="chat-manual-entry">
+        <QuickEntryButton>Registrar gasto sem IA</QuickEntryButton>
+        <Link className="text-link" href="/lancamentos/novo">
+          Abrir formulário completo
+        </Link>
+      </div>
       <section className="panel chat-thread" aria-label="Conversa com o Tato" aria-busy={busy}>
         {!rows.length && (
           <div className="chat-welcome">
+            <Mascot expression="atento" size={106} />
             <h2>Um cuidado de cada vez</h2>
             <p>Você pode começar assim:</p>
             <ul>
@@ -403,7 +426,11 @@ function Correction({
         <legend>Corrigir proposta</legend>
         <label>
           Tipo
-          <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)}>
+          <select
+            aria-label="Tipo"
+            value={kind}
+            onChange={(e) => setKind(e.target.value as typeof kind)}
+          >
             <option value="expense">Despesa realizada</option>
             <option value="income">Receita recebida</option>
           </select>
@@ -440,7 +467,12 @@ function Correction({
         </label>
         <label>
           Conta
-          <select name="account" defaultValue={proposal.content.account_id} required>
+          <select
+            aria-label="Conta"
+            name="account"
+            defaultValue={proposal.content.account_id}
+            required
+          >
             {accounts.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}

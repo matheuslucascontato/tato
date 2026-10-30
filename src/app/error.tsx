@@ -1,14 +1,16 @@
 'use client';
+import { Brand, Mascot } from '@/components/brand/tato';
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <main className="error-page">
-      <p className="brand">
-        tato<span className="brand-dot">.</span>
-      </p>
+      <Brand />
+      <div className="error-illustration">
+        <Mascot expression="cuidadoso" size={135} />
+      </div>
       <h1>Vamos tentar de novo?</h1>
       <p>
-        Não foi possível carregar esta página. Confira a conexão e as variáveis de ambiente. Se for
-        o primeiro acesso, verifique as migrações, os grants e a Data API do Supabase.
+        Não conseguimos carregar esta página agora. Confira sua conexão e tente novamente. Se
+        continuar, procure quem administra esta versão de teste.
       </p>
       <button className="btn primary" onClick={reset}>
         Tentar novamente

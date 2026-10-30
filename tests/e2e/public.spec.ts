@@ -21,6 +21,7 @@ for (const size of [
     for (const route of [
       '/painel',
       '/conversar',
+      '/mais',
       '/contas',
       '/lancamentos',
       '/compromissos',

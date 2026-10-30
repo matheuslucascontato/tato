@@ -11,6 +11,8 @@ const server = await createServer({
   server: { host: '127.0.0.1', port: 4178, strictPort: true },
   resolve: {
     alias: {
+      '@/app/actions': path.resolve('tests/ui/actions.ts'),
+      'next/image': path.resolve('tests/ui/image.tsx'),
       '@': path.resolve('src'),
       'next/navigation': path.resolve('tests/ui/router.ts'),
       'next/link': path.resolve('tests/ui/link.tsx'),

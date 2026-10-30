@@ -16,9 +16,10 @@ test('cadastro financeiro, liquidação e persistência após recarregar', async
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await expect(page).toHaveURL(/\/configuracao/);
   await page.getByLabel('Como podemos chamar você?').fill('Pessoa de teste');
+  await page.getByRole('button', { name: 'Continuar', exact: true }).click();
   await page.getByLabel('Nome da conta').fill(`TESTE principal ${suffix}`);
   await page.getByLabel('Saldo inicial (R$)', { exact: true }).fill('500,00');
-  await page.getByRole('button', { name: 'Começar a organizar' }).click();
+  await page.getByRole('button', { name: 'Concluir configuração' }).click();
   await expect(page).toHaveURL(/\/painel/);
   await page.goto('/contas/novo');
   await page.getByLabel('Nome da conta').fill(`TESTE segunda ${suffix}`);
@@ -29,7 +30,12 @@ test('cadastro financeiro, liquidação e persistência após recarregar', async
     { kind: 'expense', description: 'TESTE despesa', value: '150,00' },
   ]) {
     await page.goto('/lancamentos/novo');
-    await page.getByLabel('Tipo', { exact: true }).selectOption(entry.kind);
+    await page
+      .getByRole('radio', {
+        name: entry.kind === 'income' ? 'Receita recebida' : 'Despesa realizada',
+        exact: true,
+      })
+      .check();
     await page.getByLabel('Descrição', { exact: true }).fill(entry.description);
     await page.getByLabel('Valor (R$)', { exact: true }).fill(entry.value);
     await page
@@ -46,7 +52,12 @@ test('cadastro financeiro, liquidação e persistência após recarregar', async
     { kind: 'income', description: `TESTE receber ${suffix}`, value: '400,00' },
   ]) {
     await page.goto('/compromissos/novo');
-    await page.getByLabel('Tipo', { exact: true }).selectOption(entry.kind);
+    await page
+      .getByRole('radio', {
+        name: entry.kind === 'income' ? 'Entrada prevista' : 'Conta a pagar',
+        exact: true,
+      })
+      .check();
     await page.getByLabel('Descrição', { exact: true }).fill(entry.description);
     await page.getByLabel('Valor (R$)', { exact: true }).fill(entry.value);
     await page.getByLabel('Vencimento', { exact: true }).fill(today);

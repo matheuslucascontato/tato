@@ -1,6 +1,10 @@
 # Tato
 
-Mais clareza para cuidar do seu dinheiro. Primeira versão de um organizador financeiro pessoal em português do Brasil, com contas **manuais**, lançamentos realizados e compromissos futuros. Inclui conversa com IA no servidor para consultar totais e preparar receitas/despesas com revisão e confirmação. Não há sincronização bancária, transferências, cartões, empréstimos detalhados, parcelamentos, recorrências, WhatsApp, pagamentos ou assinaturas.
+Seu dinheiro, com mais jeito. Saiba o que cabe hoje, sem apertar o amanhã. Primeira versão de um organizador financeiro pessoal em português do Brasil, com contas **manuais**, lançamentos realizados e compromissos futuros. Inclui conversa com IA no servidor para consultar totais e preparar receitas/despesas com revisão e confirmação. Não há sincronização bancária, transferências, cartões, empréstimos detalhados, parcelamentos, recorrências, WhatsApp, pagamentos ou assinaturas.
+
+## Reformulação visual — 30/10/2026
+
+Nova identidade, painel com folga em destaque, registro rápido com revisão/validação, navegação flutuante, configuração em duas etapas e conversa com acesso manual. [Documentação e capturas verificadas](docs/REDESIGN_TATO.md). Os assets são recriações raster guiadas pelas referências fornecidas, com origem/transparência documentadas; vetores oficiais e variante negativa original permanecem pendentes. Nenhuma regra financeira, migração ou dado remoto foi alterado.
 
 ## Executar localmente
 

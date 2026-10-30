@@ -1,51 +1,68 @@
 import Link from 'next/link';
-import { Plus, LogOut } from 'lucide-react';
+import { LogOut, ShieldCheck } from 'lucide-react';
 import { Navigation } from './navigation';
 import { ActionForm } from './action-form';
-export function Shell({ children, name }: { children: React.ReactNode; name: string }) {
+import { Brand } from './brand/tato';
+import { QuickEntryProvider, QuickEntryButton } from './quick-entry';
+import type { Account, Category } from '@/lib/types';
+export function Shell({
+  children,
+  name,
+  accounts,
+  categories,
+  today,
+}: {
+  children: React.ReactNode;
+  name: string;
+  accounts: Account[];
+  categories: Category[];
+  today: string;
+}) {
   return (
-    <div className="app-shell">
-      <a href="#conteudo" className="skip-link">
-        Pular para o conteúdo
-      </a>
-      <aside className="sidebar">
-        <Link className="brand" href="/painel">
-          tato<span className="brand-dot">.</span>
-        </Link>
-        <p className="brand-caption">Um cuidado de cada vez.</p>
-        <Navigation />
-        <div className="sidebar-bottom">
-          <div className="small-note">
-            Mais clareza para cuidar
-            <br />
-            do seu dinheiro.
+    <QuickEntryProvider accounts={accounts} categories={categories} today={today}>
+      <div className="app-shell">
+        <a href="#conteudo" className="skip-link">
+          Pular para o conteúdo
+        </a>
+        <aside className="sidebar">
+          <Link className="brand" href="/painel">
+            <Brand />
+          </Link>
+          <p className="brand-caption">Seu dinheiro, com mais jeito.</p>
+          <Navigation />
+          <div className="sidebar-bottom">
+            <div className="small-note">
+              Saiba o que cabe hoje,
+              <br />
+              sem apertar o amanhã.
+            </div>
+            <p className="user-name">{name}</p>
+            <ActionForm operation="logout" auth label="Sair" className="logout-form">
+              <LogOut size={16} aria-hidden="true" />
+            </ActionForm>
           </div>
-          <p className="user-name">{name}</p>
-          <ActionForm operation="logout" auth label="Sair" className="logout-form">
-            <LogOut size={16} aria-hidden="true" />
-          </ActionForm>
+        </aside>
+        <div className="main-column">
+          <header className="topbar">
+            <Link className="brand mobile-brand" href="/painel">
+              <Brand />
+            </Link>
+            <span className="topbar-note">
+              <span className="rhythm-dot" aria-hidden="true" /> Suas finanças, no seu ritmo
+            </span>
+            <QuickEntryButton className="btn primary add-button" />
+          </header>
+          <main id="conteudo" className="page-content">
+            {children}
+          </main>
+          <footer className="app-footer">
+            <ShieldCheck size={14} aria-hidden="true" /> Contas manuais. Dados informados por você.
+            Um cuidado de cada vez.
+          </footer>
         </div>
-      </aside>
-      <div className="main-column">
-        <header className="topbar">
-          <Link className="brand mobile-brand" href="/painel">
-            tato<span className="brand-dot">.</span>
-          </Link>
-          <span className="topbar-note">Sua vida financeira, com mais clareza</span>
-          <Link href="/lancamentos/novo" className="btn primary add-button">
-            <Plus size={18} />
-            <span>Adicionar lançamento</span>
-          </Link>
-        </header>
-        <main id="conteudo" className="page-content">
-          {children}
-        </main>
-        <footer className="app-footer">
-          Feito para acompanhar o seu ritmo. Valores informados por você.
-        </footer>
+        <Navigation mobile />
       </div>
-      <Navigation mobile />
-    </div>
+    </QuickEntryProvider>
   );
 }
 export function PageHeader({

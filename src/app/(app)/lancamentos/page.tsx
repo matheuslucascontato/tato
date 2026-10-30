@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { TransactionFilters } from '@/components/filters';
 import { getData } from '@/lib/data';
 import { todaySP, monthEnd, dateBR, validDate } from '@/lib/finance/dates';
 import { money } from '@/lib/finance/money';
@@ -42,42 +43,14 @@ export default async function Transactions({
           Pronto. Lançamentos e saldos atualizados.
         </p>
       )}
-      <form className="filters">
-        <label>
-          De
-          <input type="date" name="from" defaultValue={from} min="1900-01-01" />
-        </label>
-        <label>
-          Até
-          <input type="date" name="to" defaultValue={to} min="1900-01-01" />
-        </label>
-        <label>
-          Tipo
-          <select name="kind" defaultValue={q.kind || ''}>
-            <option value="">Todos</option>
-            <option value="income">Receitas</option>
-            <option value="expense">Despesas</option>
-          </select>
-        </label>
-        <label>
-          Conta
-          <select name="account" defaultValue={q.account || ''}>
-            <option value="">Todas as contas</option>
-            {data.accounts.map((a) => (
-              <option value={a.id} key={a.id}>
-                {a.name}
-                {a.archived ? ' (arquivada)' : ''}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button className="btn secondary" type="submit">
-          Filtrar
-        </button>
-        <Link className="text-link" href="/lancamentos">
-          Limpar
-        </Link>
-      </form>
+      <TransactionFilters
+        from={from}
+        to={to}
+        kind={q.kind || ''}
+        account={q.account || ''}
+        accounts={data.accounts}
+      />
+
       {from > to && (
         <p role="alert" className="notice error">
           A data inicial precisa ser anterior ou igual à final.

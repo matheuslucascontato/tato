@@ -6,7 +6,12 @@ import { siteURL } from '@/lib/supabase/config';
 import { emailSchema, passwordSchema } from '@/lib/validation';
 import { friendlyError } from '@/lib/services/errors';
 import { mutateFinance } from '@/lib/services/finance';
-export type ActionState = { error?: string; success?: string };
+export type ActionState = {
+  error?: string;
+  success?: string;
+  destination?: string;
+  recordId?: string;
+};
 export async function authAction(
   operation: string,
   _previous: ActionState,
@@ -98,4 +103,33 @@ export async function financeAction(
   }
   revalidatePath('/', 'layout');
   redirect(`${destinations[operation] || '/painel'}?success=1`);
+}
+
+/** Returns only after the authenticated service has completed. UI owns navigation/feedback. */
+export async function saveFinanceAction(
+  operation: string,
+  _previous: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const { db, user } = await requireUser();
+  if (!Object.hasOwn(destinations, operation))
+    return { error: 'Operação indisponível neste formulário.' };
+  try {
+    await mutateFinance(db, user.id, operation, form);
+  } catch (error) {
+    return { error: friendlyError(error) };
+  }
+  revalidatePath('/', 'layout');
+  const messages: Record<string, string> = {
+    'transaction-create': 'Lançamento registrado. Seus totais foram atualizados.',
+    'account-create': 'Conta manual cadastrada.',
+    onboard: 'Seu ponto de partida está pronto.',
+    settle: 'Compromisso liquidado e lançamento conferido.',
+    reverse: 'Liquidação estornada. O compromisso está pendente novamente.',
+  };
+  return {
+    success: messages[operation] || 'Alterações salvas.',
+    destination: destinations[operation],
+    recordId: String(form.get('id') || ''),
+  };
 }

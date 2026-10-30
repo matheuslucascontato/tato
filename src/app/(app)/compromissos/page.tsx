@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Mascot } from '@/components/brand/tato';
 import { getData } from '@/lib/data';
 import { todaySP, dateBR } from '@/lib/finance/dates';
 import { money } from '@/lib/finance/money';
@@ -36,10 +37,23 @@ export default async function Commitments({
           Pronto. Compromissos, lançamentos e previsão atualizados.
         </p>
       )}
+      {['pending', 'overdue', 'all'].includes(status) &&
+        data.commitments.some((c) => c.status === 'pending' && c.due_on <= today) && (
+          <aside className="commitment-guidance">
+            <Mascot expression="cuidadoso" size={74} />
+            <div>
+              <h2>Um cuidado com o que vence agora</h2>
+              <p>
+                Há compromissos pendentes com vencimento até hoje. Confira a lista e registre o
+                pagamento ou recebimento quando acontecer.
+              </p>
+            </div>
+          </aside>
+        )}
       <form className="filters">
         <label>
           Mostrar
-          <select name="status" defaultValue={status}>
+          <select aria-label="Mostrar" name="status" defaultValue={status}>
             <option value="pending">Pendentes</option>
             <option value="overdue">Vencidos e pendentes</option>
             <option value="settled">Pagos e recebidos</option>
