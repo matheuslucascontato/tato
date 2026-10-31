@@ -4,7 +4,7 @@ A implementação está na branch `codex/tato-v1-20261028`. O repositório come�
 
 ## Implementação
 
-Next.js 16/App Router, React 19, TypeScript estrito, Tailwind 4, Supabase JS 2/SSR 0.12, com lockfile. Auth, onboarding retomável, contas manuais, categorias próprias, lançamentos realizados, compromissos e painel estão implementados. Interface em pt-BR, identidade provisória em texto, sem mascote definitivo. Conversa com IA implementada: ver [IA.md](IA.md) para limites, segurança, migração e testes. Sem WhatsApp, integração bancária, transferências, cartões, parcelamentos, empréstimos detalhados ou recorrências.
+Next.js 16/App Router, React 19, TypeScript estrito, Tailwind 4, Supabase JS 2/SSR 0.12, com lockfile. Auth, onboarding retomável, contas manuais, categorias próprias, lançamentos realizados, compromissos e painel estão implementados. Interface em pt-BR; identidade visual atual e mascote em recriações raster documentadas em REDESIGN_TATO.md, com originais vetoriais pendentes. Conversa com IA implementada: ver [IA.md](IA.md) para limites, segurança, migração e testes. Sem WhatsApp, integração bancária, transferências, cartões, parcelamentos, empréstimos detalhados ou recorrências.
 
 ## Decisões financeiras e de autorização
 
@@ -39,10 +39,12 @@ Migração adicional `20261028143816_tato_ai_preview.sql` aplicada em tato-dev, 
 
 OpenAI simulada nos testes; Chromium com UI/HTTP isolados em 390/1440px e capturas inspecionadas. RLS/grants remotos conferidos por catálogo/read only e HTTP anônimo negado. Falta sessão de testes para chamada paga no runtime e teste técnico HTTP A/B em banco isolado; scripts preparados, sem criar usuários/enviar e-mails. Relatos manuais do usuário não substituem esses testes. Consulte [IA.md](IA.md).
 
-## Validação final e implantação
+## Validação e implantação da etapa IA — 28/10/2026
 
 106 testes automáticos passaram; instalação, lint, tipos, formatação, diff check e build passaram. Quatro E2E públicos passaram, incluindo proteção de /conversar; financeiro skipped por falta de usuário de testes. UI isolada em 390/1440px passou; não equivale ao fluxo autenticado remoto. Preview dpl_EktewJJpmn4U3T2a8hDE8iWzVZsv READY/staging verificado via integração de acesso protegido da Vercel. Fonte adc662f; alterações seguintes apenas documentam o endereço. Secret OPENAI_API_KEY e variáveis Supabase continuam só em Preview, sem leitura de valores. Nenhuma chamada OpenAI real. Configuração de redirects para a nova origem está no README; a integração não pode inspecionar/alterar Auth URL Configuration.
 
 ## Redesign — 30/10/2026
 
 Reformulação integrada a partir de abb615c, preservando a correção de cotas 20261028152627. Painel, navegação, registro rápido, onboarding, Auth e componentes comuns na nova identidade. Novo adaptador saveFinanceAction reutiliza serviço autenticado existente; confirmação/sucesso só após retorno do serviço. Sem alterações nas regras/migrações/dados remotos ou chamadas OpenAI reais. Assets raster derivados das referências, oito poses e origem documentada. [REDESIGN_TATO.md](REDESIGN_TATO.md) reúne decisões, contraste, capturas com fixtures, testes e limites de evidência.
+
+Redesign enviado na fonte `edd657c`. Build remoto READY/staging no deployment `dpl_3irALtadPWNcXHYz5A9rwzi9GTke`, [abrir Preview](https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app/entrar). Proteção Vercel ativa e variáveis de Preview preservadas por metadados. 109 testes, lint, tipos, formatação, build, UI isolada 360/390/1440 e quatro E2E públicos passaram; financeiro skipped. A integração recusou a consulta protegida da nova URL/alias; o proxy cloud também bloqueou o novo host antes de HTTP. Acesso externo e callbacks desta origem permanecem não validados. O README e REDESIGN_TATO.md detalham a limitação e os valores exatos para Auth, preservando redirects anteriores. Não houve alteração/consulta ao banco remoto, envio de e-mail ou chamada OpenAI real neste redesign.

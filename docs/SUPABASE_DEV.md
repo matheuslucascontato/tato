@@ -1,5 +1,7 @@
 # Atualização: conversa com IA — 28/10/2026
 
+A correção posterior `20261028152627_tato_ai_quota_session_fix.sql` e sua validação remota em transação revertida estão no fim de [IA.md](IA.md). O redesign de 30/10 preservou as três migrações e não consultou nem alterou o banco remoto. Preview atual e limitações: [README](../README.md).
+
 A etapa seguinte acrescentou **20261028143816 / tato_ai_preview** em tato-dev, sem alterar/reaplicar a inicial. Hash local/remoto `c33bb5835ccf3339270e1ca457e5a8c32244653f9918e2d5ae302ca7cdac8796`. Acrescenta public.ai_proposals (metadados assinados/versionados) e tato_private.ai_usage (cotas), ambas com RLS. Não armazenamos prompts ou conteúdo de proposta. As funções financeiras/públicas são invoker; somente duas funções privadas de cota usam definer com papel dedicado sem grants financeiros. Checks de catálogo e HTTP anônimo passaram; não há novos avisos de segurança. Script: `scripts/verify-ai-permissions.sql`.
 
 Não foram criados usuários, enviados e-mails ou inseridas fixtures no remoto. As tabelas financeiras e dados existentes foram preservados. Sessões de testes não estão disponíveis: HTTP A/B e fluxo OpenAI real permanecem pendentes. O usuário relatou validação manual do app financeiro; isso não substitui essas verificações. [Relatório da IA](IA.md), [Preview e redirects atuais](../README.md).

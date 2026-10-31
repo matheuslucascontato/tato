@@ -1,5 +1,7 @@
 # Conversar com o Tato — 28/10/2026
 
+**Atualização visual de 30/10/2026:** interface e alternativa manual reformuladas, sem alterar serviços/cotas/migrações. A URL de Preview, seus limites de verificação e redirects atuais estão no [README](../README.md) e em [REDESIGN_TATO.md](REDESIGN_TATO.md). Endereços de implantação abaixo são históricos da etapa IA.
+
 ## Escopo e fluxo
 
 A rota autenticada `/conversar` permite consultar saldo acumulado, receitas/despesas realizadas por período e categoria e folga consolidada até o fim do mês atual. Os cards vêm de cálculos determinísticos em centavos/BigInt, com as mesmas regras do painel. Atrasados pendentes entram na folga; cancelados e liquidados não são contados novamente. Folga é **estimativa do que foi cadastrado**, sem garantia bancária. Contas arquivadas continuam no saldo e geram aviso.

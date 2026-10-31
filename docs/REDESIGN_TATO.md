@@ -90,7 +90,17 @@ Resultados: **109 testes** financeiros/validação/SQL/IA simulada/adaptador de 
 
 ## Preview e limites externos
 
-O projeto existente `tato-preview` / `prj_8aFMUCjXY0X7Q40lDLCYrzFSn2Rc` mantém proteção Vercel e variáveis. A nova implantação será registrada aqui após Ready e acesso autorizado da plataforma. Nenhuma promoção para produção. A integração não permite editar Auth URL Configuration; os novos callbacks exatos serão registrados junto à URL, sem remover redirects existentes.
+Fonte **`edd657c25d905403a37232b9a55c40044d4c4084`**, enviada à branch existente. Preview: [https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app/entrar](https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app/entrar), deployment **`dpl_3irALtadPWNcXHYz5A9rwzi9GTke`**, **READY / staging** na API. O alias do projeto também foi resolvido para esse mesmo deployment. Projeto existente `tato-preview` / `prj_8aFMUCjXY0X7Q40lDLCYrzFSn2Rc`, time `team_pg2zq72POzyTInjUC1SoySJi`. Proteção Vercel Authentication ativa, escopo `prod_deployment_urls_and_all_previews`, sem alterações. Variáveis Supabase e Secret OpenAI presentes somente em Preview, conferidos por metadados; `NEXT_PUBLIC_SITE_URL` ausente, fallback esperado `VERCEL_URL` em Preview. Nenhuma promoção para produção ou alteração de Secret.
+
+**Limite de validação externa:** a integração de consulta protegida retornou `INVALID_ARGUMENT` / deployment não encontrado ou conexão sem acesso, para URL atribuída e alias confirmado. Não há CLI/token Vercel local. A rede cloud recusou o novo domínio no CONNECT (403 do proxy, sem resposta HTTP do app). Portanto não se declara acesso externo ou callbacks desta implantação validados, apesar do build READY e proteção configurada. Não foi desabilitada proteção nem criado bypass manual. Para completar, a conexão Vercel deve conseguir consultar este deployment no projeto/time já autorizados; o host acima precisa estar permitido na rede cloud para usar HTTP local. O proprietário pode abrir o link com sua conta Vercel e conferir o app.
+
+A integração não permite editar Auth URL Configuration. Em Supabase → Authentication → URL Configuration, conferir **Site URL**: `https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app`; acrescentar, sem remover entradas existentes:
+
+- `https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app/auth/callback`
+- `https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app/auth/callback?next=/redefinir-senha`
+- `https://tato-preview-m98eonuco-matheuscamilocontato-2621s-projects.vercel.app/auth/confirm`
+
+Não foram enviados e-mails/consumidos tokens. A origem é a esperada pelo código e ambiente; falta a conferência externa acima. Nenhuma migração foi criada, editada ou aplicada nesta etapa; as três migrações existentes e o remoto foram preservados.
 
 A IA continua dependendo da resolução externa de faturamento/acesso OpenAI. Nenhuma chave foi consultada, copiada ou impressa e nenhuma chamada à API OpenAI do app foi realizada. O registro manual funciona independentemente da IA. Sessões reais de teste não estão disponíveis para validar dados privados no Preview ou HTTP A/B; roteiros existentes permanecem no README/IA.md.
 
